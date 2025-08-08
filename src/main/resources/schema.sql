@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS vehicles (
+    id VARCHAR(36) PRIMARY KEY,
+    plate_number VARCHAR(50) NOT NULL,
+    account_id VARCHAR(36) NOT NULL,
+    latitude DOUBLE DEFAULT 0.0,
+    longitude DOUBLE DEFAULT 0.0,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'ACTIVE'
+    );
