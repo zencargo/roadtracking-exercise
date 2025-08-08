@@ -12,8 +12,8 @@ import java.util.UUID
 @Service
 class VehicleService(private val jdbcTemplate: JdbcTemplate) {
     fun searchVehiclesByPlate(plate: String): List<Vehicle> {
-        val sql = "SELECT * FROM vehicles"
-        
+        val sql = "SELECT * FROM vehicles WHERE plate_number LIKE '%$plate%'"
+
         return jdbcTemplate.query(sql) { rs, _ ->
             Vehicle(
                 id = UUID.fromString(rs.getString("id")),
@@ -45,7 +45,7 @@ class VehicleService(private val jdbcTemplate: JdbcTemplate) {
                     updatedAt = rs.getTimestamp("updated_at").toLocalDateTime()
                 )
             },
-            accountId.toString()  
+            accountId.toString()
         )
     }
 
