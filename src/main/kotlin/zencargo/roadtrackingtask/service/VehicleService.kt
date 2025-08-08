@@ -12,7 +12,7 @@ import java.util.UUID
 @Service
 class VehicleService(private val jdbcTemplate: JdbcTemplate) {
     fun searchVehiclesByPlate(plate: String): List<Vehicle> {
-        val sql = "SELECT * FROM vehicles"
+        val sql = "SELECT * FROM vehicles WHERE plate_number LIKE '%$plate%'"
 
         return jdbcTemplate.query(sql) { rs, _ ->
             Vehicle(

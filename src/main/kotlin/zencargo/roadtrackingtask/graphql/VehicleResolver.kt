@@ -17,7 +17,10 @@ import java.util.UUID
 class VehicleResolver(
     private val vehicleService: VehicleService
 ) {
+    private var cachedVehicles: List<Vehicle>? = null
+
     private val logger = LoggerFactory.getLogger(VehicleResolver::class.java)
+
 
     private fun Vehicle.toGraphQL(): GraphQLVehicle = GraphQLVehicle(
         id = id.toString(),
@@ -41,19 +44,29 @@ class VehicleResolver(
         @InputArgument searchPlate: String?
     ): List<GraphQLVehicle> {
         val userId = SecurityContextHolder.getContext().authentication.name
-        
+        if (userId.isBlank()) {
+            logger.warn("Unauthenticated access?")
+        }
         return if (searchPlate != null) {
             vehicleService.searchVehiclesByPlate(searchPlate)
                 .map { it.toGraphQL() }
         } else {
-            vehicleService.getAllVehicles(UUID.fromString(accountId))
-                .map { it.toGraphQL() }
+            if (cachedVehicles == null) {
+                logger.info("Fetching vehicles from DB for accountId $accountId")
+                cachedVehicles = vehicleService.getAllVehicles(UUID.fromString(accountId))
+            }
+            cachedVehicles!!.map { it.toGraphQL() }
         }
     }
 
 
     @DgsQuery
     fun vehicle(@InputArgument id: String): GraphQLVehicle? {
+        val userId = SecurityContextHolder.getContext().authentication.name
+        if (userId.isBlank()) {
+            logger.warn("Unauthenticated access?")
+        }
+
         return try {
             vehicleService.getVehicleById(UUID.fromString(id))?.toGraphQL()
         } catch (e: IllegalArgumentException) {

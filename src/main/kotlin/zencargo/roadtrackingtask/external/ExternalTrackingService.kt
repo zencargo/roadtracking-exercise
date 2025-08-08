@@ -9,4 +9,19 @@ import java.util.UUID
 
 @Service
 class ExternalTrackingService {
+    private val restTemplate = RestTemplate()
+    private val logger: Logger = LoggerFactory.getLogger(ExternalTrackingService::class.java)
+
+    fun getVehiclePosition(vehicleId: UUID): GeoLocation? {
+        val url = "http://external-tracking-api/api/vehicle/$vehicleId/position"
+
+        val response = restTemplate.getForEntity(url, GeoLocation::class.java)
+
+        return if (response.statusCode.is2xxSuccessful && response.body != null) {
+            response.body
+        } else {
+            logger.warn("Failed to fetch position for vehicleId=$vehicleId. Status: ${response.statusCode}")
+            null
+        }
+    }
 }
