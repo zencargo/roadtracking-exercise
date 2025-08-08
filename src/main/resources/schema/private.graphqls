@@ -1,0 +1,27 @@
+type Vehicle {
+    id: String!
+    registrationNumber: String!
+    accountId: String!
+    latestPosition: Position!
+    status: Status!
+}
+
+type Position {
+    latitude: Float!
+    longitude: Float!
+    timestamp: String!
+}
+
+enum Status {
+    ACTIVE
+    INACTIVE
+}
+
+type Query {
+    vehicles(accountId: String!, searchPlate: String): [Vehicle]!
+    vehicle(id: String!): Vehicle
+}
+
+type Mutation {
+    registerVehicle(registrationNumber: String!, accountId: String!): Vehicle!
+}
